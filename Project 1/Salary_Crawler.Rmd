@@ -1,0 +1,90 @@
+---
+title: "indeed_project"
+author: "Siyi Wei"
+date: "11/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rvest)
+library(jsonlite)
+library(tidyverse)
+library(ggplot2)
+library(httr)
+```
+
+```{r utils}
+url_construct <- function(url_prefix, elements, url_suffix){
+  result = c()
+  for(e in elements){result = c(result, paste0(url_prefix,e,url_suffix))}
+  return(result)
+}
+
+process_salary_link <- function(links){
+  company = grep("-at-", links, value = T)
+  location = grep(",-", links, value = T)
+  return(list("company" = company, "location" = location))
+}
+
+get_compant_name <- function(names){
+  result = c()
+  for(name in names){
+    name = word(name, 2, sep = fixed("-at-"))
+    result = c(result, name[-length(name)])
+  }
+  return(result)
+}
+```
+
+
+```{r global_parameters}
+indeed_url_prefix = "https://ca.indeed.com/salaries/"
+indeed_url_suffix = "-Salaries"
+
+indeed_jobs_redirect = "https://ca.indeed.com/cmp/"
+
+search_prefix = "/salaries/"
+search_suffix = "-Salaries"
+job_titles = c("computer-engineer", "data-scientist", "data-analyst")
+
+job_search_pattern = url_construct(search_prefix, job_titles, search_suffix)
+urls = url_construct(indeed_url_prefix, job_titles, search_suffix)
+
+```
+
+```{r front_page_link, echo=FALSE}
+url = urls[2]
+js_table <- url %>% read_html() %>% html_table(fill = T)
+
+
+js_navigate <- url %>%
+  read_html() %>%
+  html_nodes('a') %>%
+  html_attr('href') %>%
+  grep(paste(job_search_pattern, collapse = "|"), ., value = T) %>%
+  process_salary_link()
+
+js_navigate[1] #Company
+company_name = get_compant_name(js_navigate[1])
+  
+js_navigate[2] #Location
+```
+```{r craw_data_company}
+company_url_navigate = url_construct(indeed_jobs_redirect, company_name, "/jobs")
+
+
+raw_amazon_data <- company_url_navigate[2] %>% read_html() %>%
+  html_nodes("div.cmp-JobListItem-contentsWrapper") %>% html_text() %>% print()
+```
+```{r}
+#TODO: Need to implement a data stucture to contain those information organized
+
+#TODO: Need to implement a function that can switch to next page. Since we only have the information for the first page
+
+#TODO: Need to able to craw the description for job posts
+
+#TODO: Need to able to get more company names, right now we only have the company name at the very front page
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
