@@ -9,7 +9,7 @@
 #
 # Input:
 # Output:
-# Dependencies: Use Indeed website
+# Dependencies:
 #
 # ToDo:
 # 1. extract job descriptions with salaries for different industries
@@ -20,8 +20,8 @@
 #
 # ==============================================================================
 
-# =========== 1. Extract Data ======================== #
-# =========== Extract Job Descriptions =============== #
+# =========== 1. Extract Data ======================== 
+# =========== 1.1 Extract Job Descriptions =============== 
 
 # load required  libraries
 library(tidyverse)
@@ -35,7 +35,7 @@ url <- "https://ca.indeed.com/"
 
 # We can simulate a session in a browser
 html <- url %>% 
-  html_session() # tml_session() is like opening a browser on that webpage at the computer backside
+  html_session() # html_session() is like opening a browser on that webpage at the computer backside
 
 # extract forms from the webpage
 form_blank <- url %>% 
@@ -119,6 +119,13 @@ for (i in 1:nrow(jobs_data)){
 
 job_des
 
+# ========== 1.2 Change queries ================ 
 
+# Can make a file of all jobs of interest and several locations; filling forms and exact job descriptions
 
+# ========== 1.3 More than one page ===================
 
+# 1.1 only scrapes the job descriptions of one page.
+# When there is more than one pages, make 1.1 into function and do it one each page
+
+# ========== 1.4 Store locally (.csv or .txt) =============
